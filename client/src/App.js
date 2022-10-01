@@ -1,25 +1,29 @@
-import logo from './logo.svg';
 import './App.css';
+import Menu from './components/Menu';
+import ForcastGraph from './components/ForecastGraph';
+import PerformanceGraph from './components/PerformanceGraph';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+
+
+
+
+    return (
+        <div className='app-container'>
+            <div className='header'> 
+                <h1>Stock Forecast</h1>
+            </div>
+
+            <div className='main'>
+
+            </div>
+
+            <div className='footer'>
+                <h1>Alexander Carvalho · 2022 ©</h1>
+            </div>
+        </div>
+    );
 }
 
 export default App;
