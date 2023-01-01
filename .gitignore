@@ -454,4 +454,7 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 
 # Virtual Environment
-.venv/
+venv/
+
+# Client UI
+client/
