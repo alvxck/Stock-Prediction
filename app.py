@@ -14,6 +14,8 @@ def get_stock_prediction():
         Ticker of stock to be projected.
     period : int
         Time period of stock projection.
+    model : string
+        Specified compilation model.
 
     Returns
     -------
@@ -28,9 +30,10 @@ def get_stock_prediction():
 
     Send `GET` request to ".../api/get_stock_prediction"
         include `ticker` and `period` in json parameters.
-        >>> request =  {
+        >>> request = {
                 "ticker": "AAPL",
-                "period": "3"
+                "period": 3,
+                "model": "optimized"
             }
 
     Parse `current_data` and `forecasted_data` returned in json object.
@@ -38,36 +41,19 @@ def get_stock_prediction():
         >>> response["forecasted_data"]
     """
 
-    # Recieve ticker and time period from user.
     try:
         req = request.json
         ticker = req['ticker']
         period = req['period']
+        model = req['model']
 
-    # Return error if any parameters fail.
+        current_data, forecasted_data = stock_analysis(ticker, period, model)
     except:
         return {
             'status': 'error',
             'error': ''
         }
-    
-    # Run neural network analysis on provided ticker over provided time period.
-    try: 
-        current_data, forecasted_data = stock_analysis(ticker, period)
 
-    # Return error if the ticker does not exist.
-    except ValueError:
-        pass
-
-    # Return error if the time period exceedes allowable input.
-    except ValueError:
-        pass
-
-    # Return error if neural network times out.
-    except:
-        pass
-
-    # Return stock prediction data.
     return {
         'status': 'ok',
         'current_data': [
