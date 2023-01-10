@@ -1,7 +1,7 @@
-from models import *
+from models import sequential, functional
 import datetime as dt
 
-def stock_analysis(ticker, period, model):
+def distributer(ticker, period, model):
     '''
     Pre-Process stock data
     '''
@@ -10,7 +10,5 @@ def stock_analysis(ticker, period, model):
     
     pass
 
-
-
 if __name__ == "__main__":
-    stock_analysis()
+    distributer()
