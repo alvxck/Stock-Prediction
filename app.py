@@ -1,24 +1,23 @@
 from flask import Flask, request
-from distributer import distributer
+from models import functional, sequential
 
 app = Flask(__name__)
 
 @app.route('/api/single_day_forecast', methods=['GET'])
 def sequential_forecast():
-    """
-    Forecast stock performance over a single day.
+    """Forecast stock performance over a single day.
 
     Parameters
     ----------
     ticker : string
-        Ticker of stock to be projected.
+        Ticker of stock to be forecasted.
 
     Returns
     -------
     status : string
         Status of request.
     forecasted_data : int
-        Projected stock price.
+        forecasted stock price.
     rate : int
         Performance rating compared to previous date.
 
@@ -42,7 +41,7 @@ def sequential_forecast():
         req = request.json
         ticker = req['ticker']
 
-        forecasted_data, rate = distributer(ticker, period=1, model='sequential')
+        forecasted_data, rate = sequential(ticker)
     except:
         return {
             'status': 'error',
@@ -57,8 +56,7 @@ def sequential_forecast():
 
 @app.route('/api/multi_day_forecast', methods=['GET'])
 def functional_forecast():
-    """
-    Forecast stock performance over multiple days.
+    """Forecast stock performance over multiple days.
 
     Parameters
     ----------
@@ -101,13 +99,13 @@ def functional_forecast():
         ticker = req['ticker']
         period = req['period']
 
-        forecasted_data, rate = distributer(ticker, period, model='functional')
+        forecasted_data, rate = functional(ticker, period)
     except:
         return {
             'status': 'error',
             'error': ''
         }
-
+     
     return {
         'status': 'ok',
         'forecasted_data': forecasted_data,

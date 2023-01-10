@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from pandas_datareader import data as pdr
 import yfinance as yf
 import datetime as dt 
 
+from pandas_datareader import data as pdr
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, LSTM
@@ -12,6 +12,27 @@ from keras.layers import Dense, Dropout, LSTM
 
 def sequential(ticker):
     '''
+    Sequential neural network used for forecasting stock performance.  
+    Layers:
+        [x3] LSTM
+        [x3] Dropout
+    Model:
+        [optimeser] adam
+        [loss] mean_squared_error
+        [epochs] 25
+        [batch size] 32
+
+    Parameters
+    ----------
+    ticker : string
+        ticker of stock to be forecasted.
+
+    Returns
+    -------
+    forecasted_data : int
+        Forecasted stock price.
+    rate : int
+        Performance rating compared to previous date.
     
     '''
 
@@ -88,5 +109,3 @@ def sequential(ticker):
     plt.show()
 
 sequential("SPY")
-
-
