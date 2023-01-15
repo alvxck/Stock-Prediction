@@ -1,6 +1,6 @@
 from flask import Flask, request
-from models.sequential import sequential
-from models.functional import functional
+from training.sequential import sequential
+from training.functional import functional
 
 app = Flask(__name__)
 

@@ -1,5 +1,5 @@
 import pytest
-from models.functional import functional
+from training.functional import functional
 
 
 @pytest.mark.parametrize('ticker', ['SPY', 'FB', 'AAPL'])

@@ -40,7 +40,7 @@ def sequential(ticker):
     
     # Load Data
     start = dt.datetime(2010, 1, 1)
-    end = dt.datetime(2023, 1, 1)
+    end = dt.datetime.now()
 
     data = pdr.get_data_yahoo(ticker, start, end)
 
@@ -64,19 +64,21 @@ def sequential(ticker):
     model = Sequential()
 
     model.add(LSTM(units=50, return_sequences=True, input_shape=(x_train.shape[1], 1)))
-    model.add(Dropout(0.05))
+    model.add(Dropout(0.2))
     model.add(LSTM(units=50, return_sequences=True))
-    model.add(Dropout(0.05))
+    model.add(Dropout(0.2))
     model.add(LSTM(units=50))
-    model.add(Dropout(0.05))
+    model.add(Dropout(0.2))
     model.add(Dense(units=1))
 
     model.compile(optimizer='adam', loss='mean_squared_error')
     model.fit(x_train, y_train, epochs=25, batch_size=32)
 
+    # model.save(f'models/{ticker}_sequential')
+
 
     # Test Accuracy-----------------------------------------------------------
-    test_start = dt.datetime(2022, 10, 1)
+    test_start = dt.datetime(2022, 1, 1)
     test_end = dt.datetime.now()
 
     test_data = pdr.get_data_yahoo(ticker, test_start, test_end)
@@ -107,5 +109,15 @@ def sequential(ticker):
     plt.ylabel("Share Price")
     plt.legend()
     plt.show()
+
+    # Predict next day
+    real_data = [model_inputs[len(model_inputs) + 1 - prediction_days:len(model_inputs + 1), 0]]
+    real_data = np.array(real_data)
+    real_data = np.reshape(real_data, (real_data.shape[0], real_data.shape[1], 1))
+
+    prediction = model.predict(real_data)
+    prediction = scaler.inverse_transform(prediction)
+    print(f'Prediction: {prediction}')
+
 
 sequential("SPY")
