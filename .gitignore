@@ -453,3 +453,4 @@ $RECYCLE.BIN/
 
 # Virtual Environment
 venv/
+.pytest_cache
