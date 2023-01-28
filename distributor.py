@@ -1,21 +1,36 @@
-import models
 import numpy as np
 import datetime as dt
 import matplotlib.pyplot as plt
 import pandas as pd
+import yfinance as yf
 
-
+from threading import Thread, BoundedSemaphore
+from keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 from pandas_datareader import data as pdr
 
+
+distributor_semaphore = BoundedSemaphore(value=5)
+
 def distributor(ticker, period):
+    global distributor_semaphore
+    distributor_semaphore.acquire()
+
+    yf.pdr_override()
+
+
+    start = dt.datetime(2000, 1, 1)
+    end = dt.datetime.now()
+    data = pdr.get_data_yahoo(ticker, start, end)
+    prediction_days = 365
+
+
+    model = load_model(f'models/{ticker}-seq')
     scaler = MinMaxScaler(feature_range=(0,1))
+    scaler.fit_transform(data['Close'].values.reshape(-1, 1))
 
-    test_start = dt.datetime(2022, 1, 1)
+    test_start = dt.datetime.now() - dt.timedelta(days=365)
     test_end = dt.datetime.now()
-
-
-    
 
     test_data = pdr.get_data_yahoo(ticker, test_start, test_end)
 
@@ -47,7 +62,7 @@ def distributor(ticker, period):
     plt.show()
 
     # Predict next day
-    real_data = [model_inputs[len(model_inputs) + 1 - prediction_days:len(model_inputs + 1), 0]]
+    real_data = [model_inputs[len(model_inputs) + 1 - prediction_days:len(model_inputs) + 1, 0]]
     real_data = np.array(real_data)
     real_data = np.reshape(real_data, (real_data.shape[0], real_data.shape[1], 1))
 
@@ -55,5 +70,9 @@ def distributor(ticker, period):
     prediction = scaler.inverse_transform(prediction)
     print(f'Prediction: {prediction}')
 
+    distributor_semaphore.release()
 
-    return forecasted_data, rate
+    # return forecasted_data, rate
+
+distributor_thread = Thread(target=distributor, args=('SPY', 60))
+distributor_thread.start()
