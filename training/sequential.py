@@ -41,10 +41,7 @@ def sequential(ticker):
     start = dt.datetime(2000, 1, 1)
     end = dt.datetime.now()
 
-    try: 
-        data = pdr.get_data_yahoo(ticker, start, end)
-    except:
-        print('Invalid ticker. Please try agian.')
+    data = pdr.get_data_yahoo(ticker, start, end)
 
     # Pre-process Data
     scaler = MinMaxScaler(feature_range=(0,1))

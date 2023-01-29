@@ -24,22 +24,13 @@ def distributor(ticker, period):
     data = pdr.get_data_yahoo(ticker, start, end)
     prediction_days = 365
 
-
     model = load_model(f'models/{ticker}-seq')
     scaler = MinMaxScaler(feature_range=(0,1))
-    scaler.fit_transform(data['Close'].values.reshape(-1, 1))
 
-    test_start = dt.datetime.now() - dt.timedelta(days=365)
-    test_end = dt.datetime.now()
+    actual_prices = data['Close'][-prediction_days:].values
 
-    test_data = pdr.get_data_yahoo(ticker, test_start, test_end)
-
-    actual_prices = test_data['Close'].values
-
-    total_dataset = pd.concat((data['Close'], test_data['Close']), axis=0)
-
-    model_inputs = total_dataset[len(total_dataset) - len(test_data) - prediction_days:].values
-    model_inputs = model_inputs.reshape(-1, 1)
+    model_inputs = data['Close'][-730:].values.reshape(-1, 1)
+    scaler.fit_transform(model_inputs)
     model_inputs = scaler.transform(model_inputs)
 
     x_test = []
