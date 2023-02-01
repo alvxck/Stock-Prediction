@@ -1,10 +1,9 @@
 from flask import Flask, request
 from distributor import distributor
 from threading import BoundedSemaphore
-import time
 
-max_clients = 5
-access = BoundedSemaphore(value=max_clients)
+max_connections = 5
+access = BoundedSemaphore(value=max_connections)
 
 app = Flask(__name__)
 
@@ -63,11 +62,11 @@ def forecast():
 
         res = {
             'status': 'ok',
-            'forecasted_data': forecasted_data,
+            'forecasted_data': f"{forecasted_data}",
             'rate': rate,
         }
 
-        return res, 201
+        return res, 200
     except:
         res = {
             'status': 'error',

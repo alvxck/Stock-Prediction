@@ -47,7 +47,7 @@ def sequential(ticker):
     scaler = MinMaxScaler(feature_range=(0,1))
     scaled_data = scaler.fit_transform(data['Close'].values.reshape(-1, 1))
 
-    prediction_days = 365
+    prediction_days = 60
 
     x_train = []
     y_train = []
@@ -71,7 +71,7 @@ def sequential(ticker):
     model.add(Dense(units=1))
 
     model.compile(optimizer='adam', loss='mean_squared_error')
-    model.fit(x_train, y_train, epochs=1, batch_size=32)
+    model.fit(x_train, y_train, epochs=25, batch_size=32)
 
     model.save(f'models/{ticker}-seq')
 
