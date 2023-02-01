@@ -4,18 +4,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import yfinance as yf
 
-from threading import Thread, BoundedSemaphore
 from keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 from pandas_datareader import data as pdr
 
 
-distributor_semaphore = BoundedSemaphore(value=5)
 
 def distributor(ticker, period):
-    global distributor_semaphore
-    distributor_semaphore.acquire()
-
     yf.pdr_override()
 
 
@@ -61,9 +56,5 @@ def distributor(ticker, period):
     prediction = scaler.inverse_transform(prediction)
     print(f'Prediction: {prediction}')
 
-    distributor_semaphore.release()
 
     # return forecasted_data, rate
-
-distributor_thread = Thread(target=distributor, args=('SPY', 60))
-distributor_thread.start()

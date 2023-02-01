@@ -1,5 +1,10 @@
 from flask import Flask, request
 from distributor import distributor
+from threading import BoundedSemaphore
+import time
+
+max_clients = 5
+access = BoundedSemaphore(value=max_clients)
 
 app = Flask(__name__)
 
@@ -42,21 +47,37 @@ def forecast():
                 "rate": %RATE%
             }
     """
-
+    if not access.acquire(blocking=False):
+        res = {
+            'status': 'error',
+            'error': 'Too many requests. Please try again in a few seconds.'
+        }
+        
+        return res, 429
     try:
         req = request.json
         ticker = req['ticker']
         period = req['period']
 
         forecasted_data, rate = distributor(ticker, period)
+
+        res = {
+            'status': 'ok',
+            'forecasted_data': forecasted_data,
+            'rate': rate,
+        }
+
+        return res, 201
     except:
-        return {
+        res = {
             'status': 'error',
             'error': ''
         }
-     
-    return {
-        'status': 'ok',
-        'forecasted_data': forecasted_data,
-        'rate': rate,
-    }
+
+        return res, 400
+    finally:
+        access.release()
+
+
+if __name__ == '__main__':
+    app.run()
