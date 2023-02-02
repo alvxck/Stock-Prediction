@@ -1,11 +1,12 @@
 from flask import Flask, request
-from distributor import distributor
 from threading import BoundedSemaphore
-
-max_connections = 5
-access = BoundedSemaphore(value=max_connections)
+from distributor import distributor
+from training.sequential import sequential
 
 app = Flask(__name__)
+
+max_forecast_connections = 5
+forecast_access = BoundedSemaphore(value=max_forecast_connections)
 
 @app.route('/api/forecast', methods=['GET'])
 def forecast():
@@ -31,7 +32,7 @@ def forecast():
     -------
     Project Apple, Inc. stock performance over the next 30 days.
 
-    Send `GET` request to ".../api/get_stock_prediction"
+    Send `GET` request to ".../api/forecast"
         >>> request = {
                 "ticker": "AAPL",
                 "period": 30
@@ -46,10 +47,10 @@ def forecast():
                 "rate": %RATE%
             }
     """
-    if not access.acquire(blocking=False):
+    if not forecast_access.acquire(blocking=False):
         res = {
             'status': 'error',
-            'error': 'Too many requests. Please try again in a few seconds.'
+            'message': 'Too many requests. Please try again in a few seconds.'
         }
         
         return res, 429
@@ -75,7 +76,70 @@ def forecast():
 
         return res, 400
     finally:
-        access.release()
+        forecast_access.release()
+
+
+max_train_connections = 1
+train_access = BoundedSemaphore(value=max_train_connections)
+        
+@app.rout('api/train', methods=['POST'])
+def train():
+    """Create sequential neural network model for a provided stock.
+
+    Parameters
+    ----------
+    ticker : string
+        Ticker of stock to be projected.
+
+    Returns
+    -------
+    status : string
+        Status of request.
+    message : string
+        Information about request.
+
+    Example
+    -------
+    Create a model for Apple, Inc.
+
+    Send `POST` request to ".../api/train"
+        >>> request = {
+                "ticker": "AAPL",
+            }
+
+        >>> response = {
+                "status": "ok",
+                "message": "AAPL model created"
+            }
+    """
+    if not train_access.acquire(blocking=False):
+        res = {
+            'status': 'error',
+            'message': 'Too many requests. Please try again in a few seconds.'
+        }
+        
+        return res, 429
+    try:
+        req = request.json
+        ticker = req['ticker']
+
+        sequential(ticker)
+
+        res = {
+            'status': 'ok',
+            'message': f'{ticker} model created',
+        }
+
+        return res, 201
+    except:
+        res = {
+            'status': 'error',
+            'error': ''
+        }
+
+        return res, 400
+    finally:
+        train_access.release()
 
 
 if __name__ == '__main__':
