@@ -3,13 +3,15 @@ from threading import Thread, BoundedSemaphore
 from distributor import distributor
 from training.sequential import sequential
 
+from request_models import ForecastReq, TrainReq
+
 app = FastAPI()
 
 max_forecast_connections = 5
 forecast_access = BoundedSemaphore(value=max_forecast_connections)
 
 @app.get('/api/forecast')
-def forecast():
+def forecast(req: ForecastReq):
     """Forecast stock performance over given period of time.
 
     Parameters
@@ -55,9 +57,8 @@ def forecast():
         
         return res, 429
     try:
-        req = request.json
-        ticker = req['ticker']
-        period = req['period']
+        ticker = req.ticker
+        period = req.period
 
         forecasted_data, rate = distributor(ticker, period)
 
@@ -83,7 +84,7 @@ max_train_connections = 1
 train_access = BoundedSemaphore(value=max_train_connections)
         
 @app.post('/api/train')
-def train():
+def train(req: TrainReq):
     """Create sequential neural network model for a provided stock.
 
     Parameters
@@ -120,8 +121,7 @@ def train():
         
         return res, 429
     try:
-        req = request.json
-        ticker = req['ticker']
+        ticker = req.ticker
 
         seq_thread = Thread(target=sequential, args=(ticker,))
         seq_thread.start()
