@@ -12,7 +12,7 @@ def distributor(ticker, period):
     # Load Data
     yf.pdr_override()
 
-    start = dt.datetime.now() - dt.timedelta(days=730)
+    start = dt.datetime.now() - dt.timedelta(days=5475)
     end = dt.datetime.now()
     data = pdr.get_data_yahoo(ticker, start, end)
     prediction_days = 60
@@ -28,7 +28,6 @@ def distributor(ticker, period):
 
     # Train model on accuired data
     test_data = scaled_data[train_len - prediction_days:, :]
-
     x_test = []
 
     for i in range(prediction_days, len(test_data)):
@@ -38,24 +37,29 @@ def distributor(ticker, period):
     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
     # Create prediction based on previosely trained model
-
     prediction = model.predict(x_test)
     prediction = scaler.inverse_transform(prediction)
 
     train = data[:train_len]
     test = data[train_len:]
 
-    test['Predictions'] = prediction
+    test['Prediction'] = prediction
   
-    # plt.figure(figsize=(10, 8))
+    # plt.figure(figsize=(7, 5))
     # plt.plot(train['Close'])
-    # plt.plot(test[['Close', 'Predictions']])
+    # plt.plot(test[['Close', 'Prediction']])
     # plt.title('Apple Stock Close Price')
     # plt.xlabel('Date')
-    # plt.ylabel("Close")
-    # plt.legend(['Train', 'Test', 'Predictions'])
+    # plt.ylabel('Close')
+    # plt.legend(['Train', 'Test', 'Prediction'])
 
     # plt.show()
+
+    return print(test['Prediction'])
+
+
+
+distributor("AAPL", 30)
 
     # # Calculate rate
     # actual = data['Close'][-1:].values

@@ -41,7 +41,6 @@ def sequential(ticker):
     # Load Data
     start = dt.datetime.now() - dt.timedelta(days=5475)
     end = dt.datetime.now()
-
     data = pdr.get_data_yahoo(ticker, start, end)
 
     # Pre-process data

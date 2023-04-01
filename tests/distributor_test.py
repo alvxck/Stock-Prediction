@@ -1,6 +1,6 @@
 import pytest
 
-from distributor import distributor
+from api.distributor import distributor
 
 @pytest.mark.parametrize('ticker, period', [
     ('SPY', 1),

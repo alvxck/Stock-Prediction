@@ -1,26 +1,22 @@
-from fastapi import FastAPI
-from threading import Thread, BoundedSemaphore
-from distributor import distributor
+from flask import Flask, request
+from threading import BoundedSemaphore
+from api.distributor import distributor
 from training.sequential import sequential
 
-from request_models import ForecastReq, TrainReq
-
-app = FastAPI()
+app = Flask(__name__)
 
 max_forecast_connections = 5
 forecast_access = BoundedSemaphore(value=max_forecast_connections)
 
-@app.get('/api/forecast')
-def forecast(req: ForecastReq):
+@app.route('/api/forecast', methods=['GET'])
+def forecast():
     """Forecast stock performance over given period of time.
-
     Parameters
     ----------
     ticker : string
         Ticker of stock to be projected.
     period : int
         Number of days to forecast up to (inclusive).
-
     Returns
     -------
     status : string
@@ -29,17 +25,14 @@ def forecast(req: ForecastReq):
         Array of projected stock performance over given period.
     rate : int
         Performance rating compared to initial date.
-
     Example
     -------
     Project Apple, Inc. stock performance over the next 30 days.
-
     Send `GET` request to ".../api/forecast"
         >>> request = {
                 "ticker": "AAPL",
                 "period": 30
             }
-
         >>> response = {
                 "status": "ok",
                 "forecasted_data": {
@@ -57,8 +50,9 @@ def forecast(req: ForecastReq):
         
         return res, 429
     try:
-        ticker = req.ticker
-        period = req.period
+        req = request.json
+        ticker = req['ticker']
+        period = req['period']
 
         forecasted_data, rate = distributor(ticker, period)
 
@@ -83,31 +77,26 @@ def forecast(req: ForecastReq):
 max_train_connections = 1
 train_access = BoundedSemaphore(value=max_train_connections)
         
-@app.post('/api/train')
-def train(req: TrainReq):
+@app.route('/api/train', methods=['POST'])
+def train():
     """Create sequential neural network model for a provided stock.
-
     Parameters
     ----------
     ticker : string
         Ticker of stock to be projected.
-
     Returns
     -------
     status : string
         Status of request.
     message : string
         Information about request.
-
     Example
     -------
     Create a model for Apple, Inc.
-
     Send `POST` request to ".../api/train"
         >>> request = {
                 "ticker": "AAPL",
             }
-
         >>> response = {
                 "status": "ok",
                 "message": "AAPL model created"
@@ -121,10 +110,10 @@ def train(req: TrainReq):
         
         return res, 429
     try:
-        ticker = req.ticker
+        req = request.json
+        ticker = req['ticker']
 
-        seq_thread = Thread(target=sequential, args=(ticker,))
-        seq_thread.start()
+        sequential(ticker)
 
         res = {
             'status': 'ok',
