@@ -1,6 +1,7 @@
 from flask import Flask, request
+import yfinance as yf
 from threading import Thread, BoundedSemaphore
-from api.distributor import distributor
+from api.distributor import check_ticker, distributor 
 from training.sequential import sequential
 
 app = Flask(__name__)
@@ -49,10 +50,19 @@ def forecast():
         }
         
         return res, 429
+    
     try:
         req = request.json
         ticker = req['ticker']
         period = req['period']
+
+        exists, valid = check_ticker(ticker)
+
+        if not valid:
+            raise Exception(f'{ticker} is not a valid ticker.')
+
+        if not exists:
+            raise Exception(f'{ticker} model does not exist. Plase train model first.')
 
         forecasted_data, rate = distributor(ticker, period)
 
@@ -63,13 +73,15 @@ def forecast():
         }
 
         return res, 200
-    except:
+    
+    except Exception as e:
         res = {
             'status': 'error',
-            'error': ''
+            'error': e.args[0]
         }
 
         return res, 400
+    
     finally:
         forecast_access.release()
 
@@ -109,10 +121,19 @@ def train():
         }
         
         return res, 429
+    
     try:
         req = request.json
         ticker = req['ticker']
 
+        exists, valid = check_ticker(ticker)
+
+        if not valid:
+            raise Exception(f'{ticker} is not a valid ticker.')
+
+        if exists:
+            raise Exception(f'{ticker} model already exists.')
+        
         thread = Thread(target=sequential, args=(ticker,))
         thread.start()
 
@@ -122,10 +143,11 @@ def train():
         }
 
         return res, 201
-    except:
+    
+    except Exception as e:
         res = {
             'status': 'error',
-            'error': ''
+            'error': e.args[0]
         }
 
         return res, 400
