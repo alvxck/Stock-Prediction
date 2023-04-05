@@ -1,5 +1,5 @@
 from flask import Flask, request
-from threading import BoundedSemaphore
+from threading import Thread, BoundedSemaphore
 from api.distributor import distributor
 from training.sequential import sequential
 
@@ -113,7 +113,8 @@ def train():
         req = request.json
         ticker = req['ticker']
 
-        sequential(ticker)
+        thread = Thread(target=sequential, args=(ticker,))
+        thread.start()
 
         res = {
             'status': 'ok',

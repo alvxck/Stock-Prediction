@@ -59,7 +59,7 @@ def distributor(ticker, period):
 
 
 
-distributor("AAPL", 30)
+# distributor("AAPL", 30)
 
     # # Calculate rate
     # actual = data['Close'][-1:].values
