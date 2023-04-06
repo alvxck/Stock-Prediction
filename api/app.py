@@ -1,5 +1,4 @@
 from flask import Flask, request
-import yfinance as yf
 from threading import Thread, BoundedSemaphore
 from api.distributor import check_ticker, distributor 
 from training.sequential import sequential
@@ -68,7 +67,7 @@ def forecast():
 
         res = {
             'status': 'ok',
-            'forecasted_data': f"{forecasted_data}",
+            'forecasted_data': f'{forecasted_data}',
             'rate': rate,
         }
 
@@ -134,8 +133,8 @@ def train():
         if exists:
             raise Exception(f'{ticker} model already exists.')
         
-        thread = Thread(target=sequential, args=(ticker,))
-        thread.start()
+        training_thread = Thread(target=sequential, args=(ticker,))
+        training_thread.start()
 
         res = {
             'status': 'ok',

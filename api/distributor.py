@@ -16,10 +16,9 @@ def check_ticker(ticker):
     """
 
     exists = os.path.exists(f'models/{ticker}-seq')
-    valid = len(yf.Ticker(ticker).history(period='7d', interval='1d') > 0)
+    valid = len(yf.Ticker(ticker).history(period='7d', interval='1d')) > 0
 
     return exists, valid
-
 
 
 def distributor(ticker, period):

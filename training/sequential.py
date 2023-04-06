@@ -19,7 +19,7 @@ def sequential(ticker):
     Model:
         [optimeser] adam
         [loss] mean_squared_error
-        [epochs] 25
+        [epochs] 10
         [batch size] 32
 
     Parameters
