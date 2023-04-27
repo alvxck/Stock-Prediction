@@ -7,8 +7,7 @@ Stock forecast training model + API
 Stock Forecast provides utility in estimating stock performance through the use of a sequential neural network. The integrated API allows users to:
 
 * Create a neural network from a specified stock
-* Estimate stock performance over a time period
-* Generate graphs of the estimated stock performance
+* Estimate next-day stock performance
 
 ## Getting Started
 
@@ -33,4 +32,49 @@ To start the API, run the following command:
 
 ### Training models
 
-### Basic Usage
+Training is done through the `api/train` endpoint which uses a bounded semaphore to limit the number of concurrent training processes. To start a new training process follow these steps:
+
+1. Start the API:
+
+`flask run`
+
+2. Send a POST request to the API with the following JSON body:
+
+```
+{
+    "ticker": "TICKER",
+}
+```
+
+3. The API will return a JSON response with the following format:
+
+```
+{
+    "status": "ok",
+    "message": "TICKER model created"
+}
+```
+
+### Forecasting data
+
+Forecasting is done through the `api/forecast` endpoint which uses a thread lock to limit the number of concurrent forecasting processes. To start a new forecasting process follow these steps:
+
+1. Send a GET request to the API with the following JSON body:
+
+```
+{
+    "ticker": "TICKER",
+}
+```
+
+2. The API will return a JSON response with the following format:
+
+```
+{
+    "status": "ok",
+    "forecasted_data": [[$VALUE$]]
+    "rate": [[%RATE%]]
+}
+```
+
+
