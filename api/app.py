@@ -10,36 +10,30 @@ forecast_access = BoundedSemaphore(value=max_forecast_connections)
 
 @app.route('/api/forecast', methods=['GET'])
 def forecast():
-    """Forecast stock performance over given period of time.
+    """Forecast next-day stock performance.
     Parameters
     ----------
     ticker : string
         Ticker of stock to be projected.
-    period : int
-        Number of days to forecast up to (inclusive).
     Returns
     -------
     status : string
         Status of request.
-    forecasted_data : list
-        Array of projected stock performance over given period.
+    forecasted_data : float
+        Estimated next-day value of stock.
     rate : int
-        Performance rating compared to initial date.
+        Performance rating compared to previos day.
     Example
     -------
-    Project Apple, Inc. stock performance over the next 30 days.
+    Project Apple, Inc. stock performance.
     Send `GET` request to ".../api/forecast"
         >>> request = {
                 "ticker": "AAPL",
-                "period": 30
             }
         >>> response = {
                 "status": "ok",
-                "forecasted_data": {
-                    "DATE": $VALUE$,
-                    ...
-                },
-                "rate": %RATE%
+                "forecasted_data": [[$VALUE$]]
+                "rate": [[%RATE%]]
             }
     """
     if not forecast_access.acquire(blocking=False):
@@ -53,7 +47,6 @@ def forecast():
     try:
         req = request.json
         ticker = req['ticker']
-        period = req['period']
 
         exists, valid = check_ticker(ticker)
 
@@ -63,7 +56,7 @@ def forecast():
         if not exists:
             raise Exception(f'{ticker} model does not exist. Plase train model first.')
 
-        forecasted_data, rate = distributor(ticker, period)
+        forecasted_data, rate = distributor(ticker)
 
         res = {
             'status': 'ok',
