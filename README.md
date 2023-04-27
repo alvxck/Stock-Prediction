@@ -6,7 +6,7 @@ Stock forecast training model + API
 
 Stock Forecast provides utility in estimating stock performance through the use of a sequential neural network. The integrated API allows users to:
 
-* Train sequential neural networks for specified stocks
+* Create a neural network from a specified stock
 * Estimate stock performance over a time period
 * Generate graphs of the estimated stock performance
 
