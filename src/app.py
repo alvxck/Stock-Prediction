@@ -1,7 +1,6 @@
-from flask import Flask, request
 from threading import Thread, BoundedSemaphore
-from distributor import check_ticker, distributor 
-from sequential import sequential
+from utils import check_ticker 
+from training_models import sequential
 
 app = Flask(__name__)
 

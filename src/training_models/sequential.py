@@ -2,7 +2,6 @@ import sys
 import numpy as np
 import yfinance as yf
 import datetime as dt 
-import matplotlib.pyplot as plt
 
 from pandas_datareader import data as pdr
 from sklearn.preprocessing import MinMaxScaler
