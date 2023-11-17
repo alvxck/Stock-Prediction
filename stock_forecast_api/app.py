@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.routers import sequential_api
+from stock_forecast_api.routers import sequential_api
 
 app = FastAPI()
 app.title = "Stock Forecast"

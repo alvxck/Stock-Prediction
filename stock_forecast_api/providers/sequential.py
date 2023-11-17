@@ -3,13 +3,20 @@ import numpy as np
 import yfinance as yf
 import datetime as dt 
 
-from pandas_datareader import data as pdr
+import pandas_datareader as pdr
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, LSTM
 
 
 def distributor(ticker):
+    """
+    Distributes the sequential neural network to the API.
+
+    :param ticker:
+    :type ticker: str
+    :rtype tuple
+    """
     # Pre-process data
     yf.pdr_override()
 
@@ -53,18 +60,9 @@ def sequential(ticker):
         [epochs] 10
         [batch size] 32
 
-    Parameters
-    ----------
-    ticker : string
-        ticker of stock to be forecasted.
-
-    Returns
-    -------
-    forecasted_data : int
-        Forecasted stock price.
-    rate : int
-        Performance rating compared to previous date.
-    
+    :param ticker:
+    :type ticker: str
+    :rtype None    
     '''
 
     yf.pdr_override()

@@ -11,10 +11,10 @@ Stock Forecast provides utility in estimating stock performance through the use 
 
 ## Getting Started
 
-First, setup a virtual environment in the project root directory and activate it.
+First, setup a virtual environment (v3.11.3) in the project root and activate it.
 
 ```
-python -m venv venv
+py -3.11.3 -m venv venv
 venv/scripts/activate
 ```
 
@@ -22,13 +22,9 @@ Next, install the required packages using the following command:
 
 `pip install -r requirements.txt`
 
-To initialize the API, create a .env file in the root directory of the project and add the following environment variable:
+To start the API, run the following command from the root:
 
-`FLASK_APP = api/app.py`
-
-To start the API, run the following command:
-
-`flask run`
+`uvicorn stock_forecast_api.app:app --reload`
 
 ### Training models
 
@@ -36,7 +32,7 @@ Training is done through the `api/train` endpoint which uses a bounded semaphore
 
 1. Start the API:
 
-`flask run`
+`uvicorn stock_forecast_api.app:app --reload`
 
 2. Send a POST request to the API with the following JSON body:
 
