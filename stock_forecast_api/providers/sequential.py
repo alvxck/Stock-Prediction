@@ -2,12 +2,50 @@ import sys
 import numpy as np
 import yfinance as yf
 import datetime as dt 
-import matplotlib.pyplot as plt
 
-from pandas_datareader import data as pdr
+import pandas_datareader as pdr
 from sklearn.preprocessing import MinMaxScaler
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, LSTM
+
+
+def distributor(ticker):
+    """
+    Distributes the sequential neural network to the API.
+
+    :param ticker:
+    :type ticker: str
+    :rtype tuple
+    """
+    # Pre-process data
+    yf.pdr_override()
+
+    start = dt.datetime(2000, 1, 1)
+    end = dt.datetime.now()
+    data = pdr.get_data_yahoo(ticker, start, end)
+    prediction_days = 60
+
+    model = load_model(f'models/{ticker}-seq')
+    scaler = MinMaxScaler(feature_range=(0,1))
+
+    model_inputs = data['Close'][-prediction_days*10:].values.reshape(-1, 1)
+    model_inputs = scaler.fit_transform(model_inputs)
+
+    # Predict next day
+    projection_sample = [model_inputs[len(model_inputs) - prediction_days:len(model_inputs), 0]]
+    projection_sample = np.array(projection_sample)
+    projection_sample = np.reshape(projection_sample, (projection_sample.shape[0], projection_sample.shape[1], 1))
+
+    prediction = model.predict(projection_sample)
+    prediction = scaler.inverse_transform(prediction)
+
+    # Calculate rate
+    actual = data['Close'][-1:].values
+    rate = (prediction / actual)-1
+
+    if rate > 0:
+        return prediction, f'+{rate}'
+    return prediction, f'{rate}'
 
 
 def sequential(ticker):
@@ -22,18 +60,9 @@ def sequential(ticker):
         [epochs] 10
         [batch size] 32
 
-    Parameters
-    ----------
-    ticker : string
-        ticker of stock to be forecasted.
-
-    Returns
-    -------
-    forecasted_data : int
-        Forecasted stock price.
-    rate : int
-        Performance rating compared to previous date.
-    
+    :param ticker:
+    :type ticker: str
+    :rtype None    
     '''
 
     yf.pdr_override()
