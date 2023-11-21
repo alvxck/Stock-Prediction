@@ -29,4 +29,3 @@ async def healthcheck():
     Endpoint to verify the API is running
     """
     return {"message": "Stock Forecast API is running..."}
-

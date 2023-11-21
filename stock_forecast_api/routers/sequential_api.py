@@ -2,24 +2,22 @@ from fastapi import APIRouter
 from starlette.responses import JSONResponse
 
 from stock_forecast_api.models import TickerInput
-from stock_forecast_api.providers.sequential import distributor, sequential 
-from stock_forecast_api.utils import check_ticker
-
-from multiprocessing import Queue
-from threading import Thread
+from stock_forecast_api.providers.sequential import distributor
+from stock_forecast_api.utils import check_ticker, process_ticker_queue, ticker_queue
 
 
 router = APIRouter()
 
+router.add_event_handler("startup", process_ticker_queue)
 
 @router.get("/forecast")
-def get_forecast(user_input: TickerInput) -> JSONResponse:
+async def get_forecast(user_input: TickerInput) -> JSONResponse:
     """
-    Use sequential neural netowek to forecast stock price for next day
+    Use sequential neural network to forecast stock price for next day
 
     :param user_iput: 
     :type user_input: TickerInput
-    :rtype JSONResponse
+    :rtype JSONResponse:
     """
     check_ticker(ticker=user_input.ticker)
     forecasted_data, rate = distributor(user_input.ticker)
@@ -32,7 +30,7 @@ def get_forecast(user_input: TickerInput) -> JSONResponse:
 
 
 @router.post("/train") 
-def post_trian(user_input: TickerInput) -> JSONResponse:
+async def post_trian(user_input: TickerInput) -> JSONResponse:
     """
     Train sequential neural network to forecast stock price for next day
 
@@ -42,8 +40,7 @@ def post_trian(user_input: TickerInput) -> JSONResponse:
     """
     check_ticker(ticker=user_input.ticker)
 
-    training_thread = Thread(target=sequential, args=(user_input.ticker,))
-    training_thread.start()
+    ticker_queue.put(user_input.ticker)
 
     return JSONResponse({
         'status': 'ok',
