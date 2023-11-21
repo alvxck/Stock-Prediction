@@ -15,7 +15,7 @@ async def process_ticker_queue():
     Process the ticker queue and run the sequential neural network training
     in order of tickers received from the API.
 
-    :rtype None:
+    :rtype None
     """
     bg_process = get_event_loop()
     while True:
@@ -30,7 +30,7 @@ def check_ticker(ticker: TickerInput) -> None:
 
     :param ticker: 
     :type ticker: TickerInput
-    :rtype None:
+    :rtype None
     """
 
     if (os.path.exists(f'models/{ticker}-seq')):

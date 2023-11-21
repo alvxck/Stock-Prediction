@@ -16,7 +16,7 @@ def distributor(ticker: TickerInput) -> tuple:
 
     :param ticker:
     :type ticker: TickerInput
-    :rtype tuple:
+    :rtype tuple
     """
     # Pre-process data
     yf.pdr_override()

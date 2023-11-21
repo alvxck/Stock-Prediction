@@ -17,7 +17,7 @@ async def get_forecast(user_input: TickerInput) -> JSONResponse:
 
     :param user_iput: 
     :type user_input: TickerInput
-    :rtype JSONResponse:
+    :rtype JSONResponse
     """
     check_ticker(ticker=user_input.ticker)
     forecasted_data, rate = distributor(user_input.ticker)
@@ -39,7 +39,6 @@ async def post_trian(user_input: TickerInput) -> JSONResponse:
     :rtype JSONResponse
     """
     check_ticker(ticker=user_input.ticker)
-
     ticker_queue.put(user_input.ticker)
 
     return JSONResponse({
