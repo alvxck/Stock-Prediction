@@ -28,7 +28,7 @@ To start the API, run the following command from the root:
 
 ### Training models
 
-Training is done through the `api/train` endpoint which uses a bounded semaphore to limit the number of concurrent training processes. To start a new training process follow these steps:
+Training is done through the `api/train` endpoint which uses a process queue to process concurrent training requests in order. To start a new training process follow these steps:
 
 1. Start the API:
 
@@ -53,7 +53,7 @@ Training is done through the `api/train` endpoint which uses a bounded semaphore
 
 ### Forecasting data
 
-Forecasting is done through the `api/forecast` endpoint which uses a thread lock to limit the number of concurrent forecasting processes. To start a new forecasting process follow these steps:
+Forecasting is done through the `api/forecast` endpoint. To start a new forecasting process follow these steps:
 
 1. Send a GET request to the API with the following JSON body:
 
